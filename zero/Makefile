@@ -1,8 +1,7 @@
 INCFLAGS  = -I /usr/include/GL
-INCFLAGS += -I /mit/6.837/public/include/vecmath
+INCFLAGS += -I ../res
 
-LINKFLAGS  = -lglut -lGL -lGLU
-LINKFLAGS += -L /mit/6.837/public/lib -lvecmath
+LINKFLAGS  = -framework OpenGL -framework GLUT -framework Cocoa
 
 CFLAGS    = -O2
 CC        = g++
