@@ -1,7 +1,8 @@
 INCFLAGS  = -I /usr/include/GL
-INCFLAGS += -I ../res
+INCFLAGS += -I /usr/include/vecmath
 
 LINKFLAGS  = -framework OpenGL -framework GLUT -framework Cocoa
+LINKFLAGS += -lvecmath
 
 CFLAGS    = -O3 -Wall
 CC        = g++
