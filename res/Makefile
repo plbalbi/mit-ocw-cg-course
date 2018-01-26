@@ -7,7 +7,7 @@ ver = 1.1
 major = 1
 
 vecmath: $(objects) headers
-	$(CXX) -shared -Wl,-soname,libvecmath.so.$(major) -o $(output)/libvecmath.so.$(ver) $(objects)
+	$(CXX) -shared -Wl,-install_name,libvecmath.so.$(major) -o $(output)/libvecmath.so.$(ver) $(objects)
 	cd $(output)
 	ln -sf libvecmath.so.$(ver) $(output)/libvecmath.so
 	ln -sf libvecmath.so.$(ver) $(output)/libvecmath.so.$(major)

@@ -56,6 +56,10 @@ public:
 
     void negate();
 
+    const float* toGlFloat() const{
+        return this->m_elements;
+    }
+
     // ---- Utility ----
     const float *getElements() const;
     void print() const;
