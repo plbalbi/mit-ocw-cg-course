@@ -50,15 +50,13 @@ void randomizeCurrentColor() {
     currentColor[3] = float(rand())/RAND_MAX;
 }
 
-
-
 // These are convenience functions which allow us to call OpenGL 
 // methods on Vec3d objects
 inline void glVertex(const Vector3f &a) 
-{ glVertex3fv(a); }
+{ glVertex3fv(a.toGlFloat()); }
 
 inline void glNormal(const Vector3f &a) 
-{ glNormal3fv(a); }
+{ glNormal3fv(a.toGlFloat()); }
 
 
 // This function is called whenever a "Normal" key press is received.
