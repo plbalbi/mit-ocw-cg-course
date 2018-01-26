@@ -10,60 +10,54 @@ class Matrix2f
 {
 public:
 
-    // 2x2 zero matrix
-	Matrix2f();
-	Matrix2f( float m00, float m01,
-		float m10, float m11 );
+    // Fill a 2x2 matrix with "fill", default to 0.
+    Matrix2f( float fill = 0.f );
+    Matrix2f( float m00, float m01,
+              float m10, float m11 );
 
-	// setColumns = true ==> sets the columns of the matrix to be [v0 v1]
-	// otherwise, sets the rows
-	Matrix2f( const Vector2f& v0, const Vector2f& v1, bool setColumns = true );
+    // setColumns = true ==> sets the columns of the matrix to be [v0 v1]
+    // otherwise, sets the rows
+    Matrix2f( const Vector2f& v0, const Vector2f& v1, bool setColumns = true );
 
-	Matrix2f( const Matrix2f& rm ); // copy constructor
-	Matrix2f& operator = ( const Matrix2f& rm ); // assignment operator
-	// no destructor necessary
+    Matrix2f( const Matrix2f& rm ); // copy constructor
+    Matrix2f& operator = ( const Matrix2f& rm ); // assignment operator
+    // no destructor necessary
 
-	// access element at (i,j)
-	const float& operator () ( int i, int j ) const;
-	float& operator () ( int i, int j );
+    const float& operator () ( int i, int j ) const;
+    float& operator () ( int i, int j );
 
-	Vector2f getRow( int i ) const;
-	void setRow( int i, const Vector2f& v );
+    Vector2f getRow( int i ) const;
+    void setRow( int i, const Vector2f& v );
 
-	Vector2f getCol( int j ) const;
-	void setCol( int j, const Vector2f& v );
+    Vector2f getCol( int j ) const;
+    void setCol( int j, const Vector2f& v );
 
-	float determinant();
-	Matrix2f inverse( bool* pbIsSingular = NULL, float epsilon = 0.f );
+    float determinant();
+    Matrix2f inverse( bool* pbIsSingular = NULL, float epsilon = 0.f );
 
-	void transpose();
-	Matrix2f transposed() const;
+    void transpose();
+    Matrix2f transposed() const;
 
-	// ---- Utility ----
-	operator const float* () const; // automatic type conversion for GL
-	operator float* (); // automatic type conversion for GL
-	void print();
+    // ---- Utility ----
+    const float *getElements() const;
+    void print() const;
 
-	static float determinant2x2( float m00, float m01,
-		float m10, float m11 );
+    static float determinant2x2( float m00, float m01,
+                                 float m10, float m11 );
 
-	static Matrix2f ones();
-	static Matrix2f identity();
-	static Matrix2f rotation( float degrees );
+    static Matrix2f ones();
+    static Matrix2f identity();
+    static Matrix2f rotation( float degrees );
 
 private:
 
-	float m_elements[ 4 ];
+    float m_elements[ 4 ];
 
 };
 
 // Scalar-Matrix multiplication
 Matrix2f operator * ( float f, const Matrix2f& m );
 Matrix2f operator * ( const Matrix2f& m, float f );
-
-// Matrix-Matrix sum, difference
-Matrix2f operator + ( const Matrix2f& a, const Matrix2f& b );
-Matrix2f operator - ( const Matrix2f& a, const Matrix2f& b );
 
 // Matrix-Vector multiplication
 // 2x2 * 2x1 ==> 2x1
