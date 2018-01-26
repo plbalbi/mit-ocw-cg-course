@@ -5,6 +5,8 @@
 #include <vector>
 #include <vecmath.h>
 
+#define DEBUG 0
+
 // libs for generating random colors
 #include <stdlib.h>
 #include <time.h>
@@ -153,7 +155,23 @@ void drawScene(void)
 
 	// This GLUT method draws a teapot.  You should replace
 	// it with code which draws the object you loaded.
-	glutSolidTeapot(1.0);
+    if (vecf.empty()) {
+        std::cout << "Loading default model" << std::endl;
+        glutSolidTeapot(1.0);
+    }else {
+        std::cout << "Loading custom model" << std::endl;
+        for (int i = 0; i < vecf.size(); i++) {
+            glBegin(GL_TRIANGLES);
+            face* currentFace = &vecf[i];
+            glNormal3d(vecn[currentFace->c-1][0], vecn[currentFace->c-1][1], vecn[currentFace->c-1][2]);
+            glVertex3d(vecv[currentFace->a-1][0], vecv[currentFace->a-1][1], vecv[currentFace->a-1][2]);
+            glNormal3d(vecn[currentFace->f-1][0], vecn[currentFace->f-1][1], vecn[currentFace->f-1][2]);
+            glVertex3d(vecv[currentFace->d-1][0], vecv[currentFace->d-1][1], vecv[currentFace->d-1][2]);
+            glNormal3d(vecn[currentFace->i-1][0], vecn[currentFace->i-1][1], vecn[currentFace->i-1][2]);
+            glVertex3d(vecv[currentFace->g-1][0], vecv[currentFace->g-1][1], vecv[currentFace->g-1][2]);
+            glEnd();
+        }
+    }
     
     // Dump the image to the screen.
     glutSwapBuffers();
@@ -188,29 +206,72 @@ void reshapeFunc(int w, int h)
 }
 
 void loadInput() {
+    std::cout << "Loading input .obj file" << std::endl;
+    int lineCount = 1;
     char buffer[MAX_BUFFER_SIZE];
     Vector3f v;
     string s;
-    while (cin.eof()){
+    int a,c,d,f,g,i;
+    while (!cin.eof()){
+        #if DEBUG
+        std::cout << "Processing line " << lineCount << std::endl;
+        #endif
         cin.getline(buffer, MAX_BUFFER_SIZE);
         stringstream ss(buffer);
         ss >> s;
         if (s == "v") {
             // Its a vector
             ss >> v[0] >> v[1] >> v[2];
+            #if DEBUG
+            std::cout << "vector loaded: " << v[0] << ", " << v[1] << ", " << v[2] << std::endl;
+            #endif
             vecv.push_back(Vector3f(v[0],v[1],v[2]));
         }else if (s == "vn") {
             // Its a normal
             ss >> v[0] >> v[1] >> v[2];
+            #if DEBUG
+            std::cout << "normal loaded: " << v[0] << ", " << v[1] << ", " << v[2] << std::endl;
+            #endif
             vecn.push_back(Vector3f(v[0],v[1],v[2]));
         }else if (s == "f") {
             // Its a face
             // bring first face vector
             ss >> s;
+            stringstream faceStream(s);
+            string token;
+            getline(faceStream, token, '/');
+            a = stoi(token);
+            getline(faceStream, token, '/');
+            getline(faceStream, token, '/');
+            c = stoi(token);
+            // bring second face vector
+            ss >> s;
+            faceStream.str(s);
+            getline(faceStream, token, '/');
+            d = stoi(token);
+            getline(faceStream, token, '/');
+            getline(faceStream, token, '/');
+            f = stoi(token);
+            // bring third face vector
+            ss >> s;
+            faceStream.str(s);
+            getline(faceStream, token, '/');
+            g = stoi(token);
+            getline(faceStream, token, '/');
+            getline(faceStream, token, '/');
+            i = stoi(token);
             // its sth like NUM/NUM/NUM
+            // push new face
+            vecf.push_back(face(a,0,c,d,0,f,g,0,i));
 
+            #if DEBUG
+            std::cout << "face loaded: " << a << "/-/" << c << "  ";
+            std::cout << d << "/-/" << f << "  " ;
+            std::cout << g << "/-/" << i << "  " ;
+            std::cout << std::endl;
+            #endif
         } // else: do nothing
-
+    lineCount++;
     }
 }
 
