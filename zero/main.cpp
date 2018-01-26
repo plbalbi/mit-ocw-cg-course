@@ -4,9 +4,31 @@
 #include <sstream>
 #include <vector>
 #include <vecmath.h>
+
+// libs for generating random colors
+#include <stdlib.h>
+#include <time.h>
+
+#define MAX_BUFFER_SIZE 1024
+
 using namespace std;
 
+typedef struct face_s{
+    int a,b,c,d,e,f,g,h,i;
+    face_s(int a,int b,int c,int d,int e,int f,int g,int h,int i):
+        a(a),
+        b(b),
+        c(c),
+        d(d),
+        e(e),
+        f(f),
+        g(g),
+        h(h),
+        i(i) {}
+}face;
+
 // Globals
+GLfloat lightPosition[] = {1.0f, 1.0f, 5.0f, 1.0f};
 
 // This is the list of points (3D vectors)
 vector<Vector3f> vecv;
@@ -15,10 +37,19 @@ vector<Vector3f> vecv;
 vector<Vector3f> vecn;
 
 // This is the list of faces (indices into vecv and vecn)
-vector<vector<unsigned> > vecf;
+vector< face > vecf;
+
+// GLobal variable which represents current color
+GLfloat currentColor[4] = {0.5, 0.5, 0.9, 1.0};
 
 
-// You will need more global variables to implement color and position changes
+void randomizeCurrentColor() {
+    currentColor[0] = float(rand())/RAND_MAX;
+    currentColor[1] = float(rand())/RAND_MAX;
+    currentColor[2] = float(rand())/RAND_MAX;
+    currentColor[3] = float(rand())/RAND_MAX;
+}
+
 
 
 // These are convenience functions which allow us to call OpenGL 
@@ -40,7 +71,8 @@ void keyboardFunc( unsigned char key, int x, int y )
         break;
     case 'c':
         // add code to change color here
-		cout << "Unhandled key press " << key << "." << endl; 
+        randomizeCurrentColor();
+		cout << "Changing teapot colors..." << endl; 
         break;
     default:
         cout << "Unhandled key press " << key << "." << endl;        
@@ -58,19 +90,23 @@ void specialFunc( int key, int x, int y )
     {
     case GLUT_KEY_UP:
         // add code to change light position
-		cout << "Unhandled key press: up arrow." << endl;
+		cout << "Adjusting light position up..." << endl;
+        lightPosition[1]+=.5;
 		break;
     case GLUT_KEY_DOWN:
         // add code to change light position
-		cout << "Unhandled key press: down arrow." << endl;
+		cout << "Adjusting light position down..." << endl;
+        lightPosition[1]-=.5;
 		break;
     case GLUT_KEY_LEFT:
         // add code to change light position
-		cout << "Unhandled key press: left arrow." << endl;
+		cout << "Adjusting light position to left..." << endl;
+        lightPosition[0]-=.5;
 		break;
     case GLUT_KEY_RIGHT:
         // add code to change light position
-		cout << "Unhandled key press: right arrow." << endl;
+		cout << "Adjusting light position to right..." << endl;
+        lightPosition[0]+=.5;
 		break;
     }
 
@@ -98,14 +134,8 @@ void drawScene(void)
 
     // Set material properties of object
 
-	// Here are some colors you might use - feel free to add more
-    GLfloat diffColors[4][4] = { {0.5, 0.5, 0.9, 1.0},
-                                 {0.9, 0.5, 0.5, 1.0},
-                                 {0.5, 0.9, 0.3, 1.0},
-                                 {0.3, 0.8, 0.9, 1.0} };
-    
 	// Here we use the first color entry as the diffuse color
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, diffColors[0]);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, currentColor);
 
 	// Define specular color and shininess
     GLfloat specColor[] = {1.0, 1.0, 1.0, 1.0};
@@ -119,11 +149,9 @@ void drawScene(void)
 
     // Light color (RGBA)
     GLfloat Lt0diff[] = {1.0,1.0,1.0,1.0};
-    // Light position
-	GLfloat Lt0pos[] = {1.0f, 1.0f, 5.0f, 1.0f};
 
     glLightfv(GL_LIGHT0, GL_DIFFUSE, Lt0diff);
-    glLightfv(GL_LIGHT0, GL_POSITION, Lt0pos);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
 
 	// This GLUT method draws a teapot.  You should replace
 	// it with code which draws the object you loaded.
@@ -161,15 +189,41 @@ void reshapeFunc(int w, int h)
     gluPerspective(50.0, 1.0, 1.0, 100.0);
 }
 
-void loadInput()
-{
-	// load the OBJ file here
+void loadInput() {
+    char buffer[MAX_BUFFER_SIZE];
+    Vector3f v;
+    string s;
+    while (cin.eof()){
+        cin.getline(buffer, MAX_BUFFER_SIZE);
+        stringstream ss(buffer);
+        ss >> s;
+        if (s == "v") {
+            // Its a vector
+            ss >> v[0] >> v[1] >> v[2];
+            vecv.push_back(Vector3f(v[0],v[1],v[2]));
+        }else if (s == "vn") {
+            // Its a normal
+            ss >> v[0] >> v[1] >> v[2];
+            vecn.push_back(Vector3f(v[0],v[1],v[2]));
+        }else if (s == "f") {
+            // Its a face
+            // bring first face vector
+            ss >> s;
+            // its sth like NUM/NUM/NUM
+
+        } // else: do nothing
+
+    }
 }
 
 // Main routine.
 // Set up OpenGL, define the callbacks and start the main loop
 int main( int argc, char** argv )
 {
+
+    // generate time seed for random colors
+    srand(time(0));
+
     loadInput();
 
     glutInit(&argc,argv);

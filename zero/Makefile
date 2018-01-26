@@ -3,7 +3,7 @@ INCFLAGS += -I ../res
 
 LINKFLAGS  = -framework OpenGL -framework GLUT -framework Cocoa
 
-CFLAGS    = -O2
+CFLAGS    = -O3 -Wall
 CC        = g++
 SRCS      = main.cpp
 OBJS      = $(SRCS:.cpp=.o)
